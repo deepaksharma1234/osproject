@@ -329,4 +329,5 @@ switch(no)
 default:
 	printf("pressed another key from above mentioned");
 	endprog();
-}}
+}
+}

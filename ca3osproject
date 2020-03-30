@@ -16,7 +16,7 @@ int allocat(int xx,int yy)
 	{
 		if(sp1[xx]==1 || sp2[xx]==1)
 		{
-			printf("\nStudent processes can not have similar items.");
+			printf("\nStud processes can not have similar items.");
 			endprog();
 		}
 	}

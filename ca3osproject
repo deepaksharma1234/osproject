@@ -1,0 +1,332 @@
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+#include<conio.h>
+#include<dos.h>
+pthread_mutex_t loc=PTHREAD_MUTEX_INITIALIZER;
+int sp0[3],sp1[3],sp2[3],no;
+void endprog()
+{
+	printf("\n\n\n\n\t\t\t\t Submitted by:\n\t\t\t Deepak Sharma, K18RH, group - B46 \n\n\n\n");
+	exit(0);
+}
+int allocat(int xx,int yy)
+{   int p=1;
+	if(yy==0)
+	{
+		if(sp1[xx]==1 || sp2[xx]==1)
+		{
+			printf("\nStudent processes can not have similar items.");
+			endprog();
+		}
+	}
+	if(yy==1)
+	{
+		if(sp0[xx]==1 || sp2[xx]==1)
+		{
+			printf("\nStudent processes can not have similar items.");
+			endprog();
+		}
+	}
+	if(yy==2)
+	{
+		if(sp0[xx]==1 || sp1[xx]==1)
+		{
+			printf("\nStudent processes can not have similar items.");
+			endprog();
+		}
+	}
+	return p;
+}
+void *stud0()
+    {
+	printf("\nPress 1 for pen , 2 for paper & 3 for question paper\n");
+	printf("Enter the item present with 1st student: ");
+	pthread_mutex_lock(&loc);
+	scanf("%d",&no);
+	if(no==1)
+	{
+		sp0[0]=allocat(0,0);
+	}
+	else
+		{ if(no==2)
+			{
+				sp0[1]=allocat(1,0);
+			}
+		else
+			{ if(no==3)
+				{
+					sp0[2]=allocat(2,0);
+				}
+			else
+				{
+			printf(" Student process is unable to construct\n");
+		}}
+	}
+	pthread_mutex_unlock(&loc);
+}
+void *stud1()
+    {
+	printf("\nEnter the item present with 2nd student: ");
+	pthread_mutex_lock(&loc);
+	scanf("%d",&no);
+	if(no==1)
+	{
+		sp1[0]=allocat(0,1);
+	}
+	else{ if(no==2)
+	{
+		sp1[1]=allocat(1,1);
+	}
+	else{ if(no==3)
+	{
+		sp1[2]=allocat(2,1);
+	}
+	else
+	{
+		printf("student process is unable to construct\n");
+	}}}
+	pthread_mutex_unlock(&loc);
+}
+void *stud2()
+{
+
+	printf("\nEnter the item present with 3rd student: ");
+	pthread_mutex_lock(&loc);
+	scanf("%d",&no);
+	if(no==1)
+	{
+		sp2[0]=allocat(0,2);
+	}
+	else{ if(no==2)
+		{
+			sp2[1]=allocat(1,2);
+		}
+		else{ if(no==3)
+			{
+				sp2[2]=allocat(2,2);
+			}
+		    else
+			{
+			printf("student process is unable to construct\n");
+			}
+		  }
+	}
+	pthread_mutex_unlock(&loc);
+}
+int checking(int aa,int bb)
+{   	int cc=0;
+	if (aa==1 && bb==2 || aa==2 && bb==1)
+		{
+			cc=3;
+		}
+	else{ if (aa==1 && bb==3 || aa==3 && bb==1)
+		{
+			cc=2;
+		}
+    else{ if (aa==2 && bb==3 || aa==3 && bb==2)
+			{
+				cc=1;
+			}
+    else
+        {
+				printf("\nVerify details; Your input might be wrong or You have entered the same resources twice which will yield no result\n");
+				endprog();
+        }
+        }
+	    }
+	return cc;
+}
+void checking1(int cc)												//Function that completes a student process accordingly
+{
+if(sp0[cc-1]==1)
+		{
+		 	printf("\t\t 1st Student had last item,completed his work & tells teacher\t\t\n\n");
+		}
+		else{ if(sp1[cc-1]==1)
+		{
+			printf("\t\t 2nd Student had last item,completed his work & tells teacher\t\t\n");
+		}
+		else{ if(sp2[cc-1]==1)
+		{
+			printf("\t\t 3rd Student had last item, he completes his work & tells teacher\t\t\n");
+		}
+		else { printf("\nStudent had the respective last item has either completed his task\n");
+		}}}
+		return;
+}
+void *table()
+{
+	int aa,bb,cc,dd,ee,ff;
+		pthread_mutex_lock(&loc);
+		aa=1,bb=2;
+		printf("\n\t---Teacher places Pen & Paper on the shared table\t---\n");
+		cc=checking(aa,bb);
+		checking1(cc);
+		pthread_mutex_unlock(&loc);
+		pthread_mutex_lock(&loc);
+		aa=2,bb=3;
+		printf("\n\t---Teacher places Question Paper & Paper on the shared table\t---\n");
+		cc=checking(aa,bb);
+		checking1(cc);
+		pthread_mutex_unlock(&loc);
+		pthread_mutex_lock(&loc);
+		aa=1,bb=3;
+		printf("\n\t---Teacher places Pen & Question Paper on shared table\t---\n");
+		cc=checking(aa,bb);
+		checking1(cc);
+		pthread_mutex_unlock(&loc);
+}
+void main()
+{
+    system("COLOR F0");
+    int person[30],pr[30],bursttime[30],temporar,maxim,watingtime[30],turnaround[30],total=0,i,j,k,cc=0,dd=0;
+    watingtime[0]=0;
+	pthread_t St0,St1,St2,Teach1;
+	printf("\t\t\t\t\t\t  OS");Sleep(500);printf(" SIMULATION");Sleep(500);
+	printf(" BASED");Sleep(500);printf(" ASSIGNMENT \t\t\t\t\t\t\n");Sleep(500);
+printf("It involves three cases.\ncase 1:At Assignment center \ncase 2:At Library\ncase 3:This is subcase of 2 under fixed cicumstances \n  Please choose any one :-   ");
+	scanf("%d",&no);
+switch(no)
+{
+	case 1:
+		printf("\nSituation analysis: \nThere are 3 student processes and 1 teacher process. Students are supposed to do their assignments and they need 3 things for that- pen,paper and question paper. The teacher has an infinite supply of all the three things. One student has pen, another has paper and another has question paper. The teacher places two things on a shared table and the student having the third complementary thing makes the assignment and tells the teacher on completion. The teacher then places two things out of three and again the student having the third thing makes the assignment and tells the teacher on completion. This cycle continues.\n\n");
+		pthread_create(&St0,NULL,stud0,NULL);
+		pthread_join(St0,NULL);
+		pthread_create(&St1,NULL,stud1,NULL);
+		pthread_join(St1,NULL);
+		pthread_create(&St2,NULL,stud2,NULL);
+		pthread_join(St2,NULL);
+		pthread_create(&Teach1,NULL,table,NULL);
+		pthread_join(Teach1,NULL);
+		printf("\n\ncase 1 at Assignment center get completed\n");
+		printf("\npress 0 for another case, else other key to exit :  ");
+		scanf("%d",&no);
+		if (no==0)
+		{
+			main();
+		}
+		else {endprog();}
+		break;
+	case 2:
+		{printf("\nSituation analysis: \nTwo types of people can enter into a library-students and teachers. After entering the library, the visitor searches for the required books and get them. In ordr to get them issued, he goes to the single CPU which is there to process the issuing of books. Two types of queues are there at the counter-one for students and one for teachers.A student goes and stands at the tail of the queue for students and simliarly the teacher goes and stands at the tail of the queue for teaches (FIFO).If a student is being served and a teacher arrives at the counter, he would be the next person to get service (PRIORITY - non preemtive). If two teachers arrive at the same time, they will stand in their queue to get service (FIFO).\n\n");
+		printf("Enter total number of candidates:");
+		scanf("%d",&k);
+		printf("Enter value 0 for teacher or 1 for student\n");
+		for(i=0;i<k;i++)
+		{
+			person[i]=i+1;
+			bursttime[i]=1;
+			printf("Who comes at %d? -",i+1);
+			scanf("%d",&pr[i]);
+		}
+		for(i=0;i<k;i++)
+		{
+		   	maxim=i;
+			for(j=i+1;j<k;j++)
+			{
+				if(pr[j] <pr[maxim])
+				maxim=j;
+			}
+			temporar=pr[maxim];
+			pr[maxim]=pr[i];
+			pr[i]=temporar;
+			temporar=bursttime[maxim];
+			bursttime[maxim]=bursttime[i];
+			bursttime[i]=temporar;
+			temporar=person[maxim];
+			person[maxim]=person[i];
+			person[i]=temporar;
+		}
+
+		for(i=0;i<k;i++)
+		{
+			watingtime[i+1]=bursttime[i]+watingtime[i];
+			turnaround[i]=bursttime[i]+watingtime[i];
+			total+=turnaround[i];
+		}
+		for(i=0;i<k;i++)
+		{
+			printf("\nWaiting time for %d person is - %d",person[i],watingtime[i]);
+		}
+		printf("\n\ncase 2 take place\n");
+		printf("\npress 0 for another case ,other key to exit :  ");
+		scanf("%d",&no);
+		if (no==0)
+		{
+			main();
+		}
+		else {endprog();}
+		break;
+		}
+	case 3:
+		{printf("\nSituation analysis:\nIf two teachers arrive at the same time, they will stand in their queue to get service (FIFO).\n If a teacher is being served and during the period when he is being served, another teacher comes, then that teacher would get the service next. This process might continue leading to increase in waiting time of students and the program times to minimise this.\n\n");
+
+		printf("Enter total number of candidates:");
+		scanf("%d",&k);
+		printf("Enter the value 0 for teacher or 1 for student\n");
+		for(i=0;i<k;i++)
+		{
+			person[i]=i+1;
+			bursttime[i]=1;
+			printf("\t Who comes at %d? - ",i+1);
+			scanf("%d",&pr[i]);
+			if(pr[i]==0)
+			{
+				cc=cc+1;
+			}
+			if(pr[i]==0 && dd==1)
+			{
+				pr[i]=pr[i]+1;
+				dd=0;
+			}
+			if(cc==3)
+			{
+				cc=0;
+				dd=1;
+				continue;
+			}
+		}
+		for(i=0;i<k;i++)
+		{
+	   		maxim=i;
+			for(j=i+1;j<k;j++)
+			{
+				if(pr[j] <pr[maxim])
+				maxim=j;
+			}
+			temporar=pr[maxim];
+			pr[maxim]=pr[i];
+			pr[i]=temporar;
+			temporar=bursttime[maxim];
+			bursttime[maxim]=bursttime[i];
+			bursttime[i]=temporar;
+			temporar=person[maxim];
+			person[maxim]=person[i];
+			person[i]=temporar;
+		}
+
+		for(i=0;i<k;i++)
+		{
+			watingtime[i+1]=bursttime[i]+watingtime[i];
+			turnaround[i]=bursttime[i]+watingtime[i];
+			total+=turnaround[i];
+		}
+		for(i=0;i<k;i++)
+		{
+			printf("\nWaiting time for person %d is - %d",person[i],watingtime[i]);
+		}
+		printf("\n\ncase 3 takes place\n");
+		printf("\npress 0 for other case, otherwise any key:  ");
+		scanf("%d",&no);
+		if (no==0)
+		{
+			main();
+		}
+		else {endprog();}
+		break;
+	}
+default:
+	printf("pressed another key from above mentioned");
+	endprog();
+}}

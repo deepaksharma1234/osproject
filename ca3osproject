@@ -327,6 +327,6 @@ switch(no)
 		break;
 	}
 default:
-	printf("pressed another key from above mentioned");
+	printf("press another key from above mentioned");
 	endprog();
 }}
